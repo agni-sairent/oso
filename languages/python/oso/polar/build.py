@@ -42,8 +42,8 @@ ffibuilder.set_source(
     r"""
     #include "polar.h"
     """,
-    library_dirs=[lib_dirs[env]],
-    include_dirs=[include_dir],
+    library_dirs=[str(lib_dirs[env])],
+    include_dirs=[str(include_dir)],
     libraries=["rt"] if sys.platform.startswith("linux") else [],
     extra_link_args=libs,
 )

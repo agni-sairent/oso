@@ -1,6 +1,6 @@
 [project]
 name = "oso"
-version = "0.28.0"
+version = "0.28.1"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -15,13 +15,21 @@ dev = [
     "twine",
     "cibuildwheel"
 ]
-
-[build-system]
-requires = ["setuptools>=80", "wheel", "cffi>=1.15"]
-build-backend = "setuptools.build_meta"
+#
+#[build-system]
+#requires = ["setuptools>=80", "wheel", "cffi>=1.15"]
+#build-backend = "setuptools.build_meta:__legacy__"
 
 [tool.setuptools.packages.find]
 where = ["./languages/python/oso/"]
+
+[tool.setuptools]
+# Ensure cffi out-of-line builder runs during wheel build
+#cffi_modules = ["languages/python/oso/polar/build.py:ffibuilder"]
+
+[tool.setuptools.package-data]
+polar = ["py.typed", "include/*", "native/*"]
+oso = ["py.typed"]
 
 [tool.cibuildwheel]
 before-all = """
@@ -34,17 +42,22 @@ curl -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolcha
 . "$HOME/.cargo/env"
 cargo install cbindgen --locked
 
-# Build the Rust static lib
+# Build the Rust static lib (also generates polar.h via build.rs)
 cargo build -p polar-c-api --release
 
-# Copy the built static library into the packaged native dir
-#cp /project/target/release/libpolar.a /project/languages/python/oso/native/
+# Prepare native dir for Python package and copy artifacts
+mkdir -p /project/languages/python/oso/native
+cp /project/target/release/libpolar.a /project/languages/python/oso/native/
+cp /project/polar-c-api/polar.h /project/languages/python/oso/native/
 """
 
 archs = ["auto"]
 # Choose policies that match your compatibility goals:
 manylinux-x86_64-image = "manylinux2014"
 manylinux-aarch64-image = "manylinux2014"
+
+# Skip musllinux due to -lrt linking incompatibility in cffi build
+skip = ["*musllinux*"]
 
 # Example: build CPython 3.8–3.12 wheels
 # (adjust to your actual support window)

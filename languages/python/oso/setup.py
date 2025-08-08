@@ -14,7 +14,7 @@ except OSError:
     long_description = ""
 
 install_requires = ""
-with open("requirements.txt") as fp:
+with open(path.join(here, "requirements.txt")) as fp:
     install_requires += fp.read()
 
 
@@ -51,7 +51,7 @@ setup(
     packages=find_packages(where="languages/python/oso", include=["oso*", "polar*"], exclude=["tests*", "examples*"]),
     python_requires=">=3.7",
     setup_requires=["cffi>=1.0.0", "wheel"],
-    cffi_modules=["polar/build.py:ffibuilder"],
+    cffi_modules=["languages/python/oso/polar/build.py:ffibuilder"],
     install_requires=install_requires,
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"
