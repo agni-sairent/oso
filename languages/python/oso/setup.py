@@ -48,7 +48,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "License :: OSI Approved :: Apache Software License",
     ],
-    packages=find_packages(exclude=["tests", "tests.*"]),
+    packages=find_packages(where="languages/python/oso", include=["oso*", "polar*"], exclude=["tests*", "examples*"]),
     python_requires=">=3.7",
     setup_requires=["cffi>=1.0.0", "wheel"],
     cffi_modules=["polar/build.py:ffibuilder"],
@@ -67,7 +67,10 @@ setup(
     #
     # If using Python 2.6 or earlier, then these have to be included in
     # MANIFEST.in as well.
-    package_data={"polar": ["py.typed"], "oso": ["py.typed"]},  # Optional
+    package_dir={"": "languages/python/oso"},
+    package_data={"polar": ["py.typed", "include/*",
+                            "native/*",
+                            ], "oso": ["py.typed"]},  # Optional
     # Although 'package_data' is the preferred approach, in some case you may
     # need to place data files outside of your packages. See:
     # http://docs.python.org/3.4/distutils/setupscript.html#installing-additional-files

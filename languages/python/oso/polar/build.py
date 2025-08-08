@@ -6,19 +6,22 @@ from cffi import FFI
 
 ffibuilder = FFI()
 
+# This file lives at languages/python/oso/polar/build.py
+PKG_ROOT = Path(__file__).resolve().parents[1]  # languages/python/oso
+
+# Allow CI to provide an explicit native dir (with polar.h and libpolar.a)
+NATIVE_DIR = Path(os.environ.get("OSO_NATIVE_DIR", PKG_ROOT / "native"))
+
 lib_dirs = {
-    "DEVELOPMENT": "../../../target/debug",
-    "RELEASE": "../../../target/release",
-    "CI": "native",
+    "CI": NATIVE_DIR,
+    "DEFAULT": PKG_ROOT / "target" / "release",  # fallback for local builds
 }
-#BASE_DIR = Path(__file__).parent.parent.parent.parent.parent
-BASE_DIR = Path("/home/agni/projects/oso")
 include_dirs = {
-    "DEVELOPMENT": BASE_DIR / "polar-c-api",
-    "RELEASE": BASE_DIR / "polar-c-api",
-    "CI": "native",
+    "CI": NATIVE_DIR,
+    "DEFAULT": PKG_ROOT / "polar-c-api",  # fallback for local builds
 }
-env = os.environ.get("OSO_ENV", "DEVELOPMENT")
+
+env = "CI"
 libs = []
 if sys.platform.startswith("win"):
     libs.extend(

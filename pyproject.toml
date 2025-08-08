@@ -1,0 +1,53 @@
+[project]
+name = "oso"
+version = "0.28.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "cffi~=1.15",
+]
+
+
+[dependency-groups]
+dev = [
+    "setuptools>=80",
+    "twine",
+    "cibuildwheel"
+]
+
+[build-system]
+requires = ["setuptools>=80", "wheel", "cffi>=1.15"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["./languages/python/oso/"]
+
+[tool.cibuildwheel]
+before-all = """
+set -eux
+# Ensure we work from the project root
+cd /project
+
+# Install Rust & cbindgen
+curl -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain stable
+. "$HOME/.cargo/env"
+cargo install cbindgen --locked
+
+# Build the Rust static lib
+cargo build -p polar-c-api --release
+
+# Copy the built static library into the packaged native dir
+#cp /project/target/release/libpolar.a /project/languages/python/oso/native/
+"""
+
+archs = ["auto"]
+# Choose policies that match your compatibility goals:
+manylinux-x86_64-image = "manylinux2014"
+manylinux-aarch64-image = "manylinux2014"
+
+# Example: build CPython 3.8–3.12 wheels
+# (adjust to your actual support window)
+build = [ "cp312-*", "cp313-*"]
+environment = { OSO_ENV = "CI", OSO_NATIVE_DIR = "/project/languages/python/oso/native" }
+
