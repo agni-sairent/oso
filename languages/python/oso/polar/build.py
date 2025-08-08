@@ -1,5 +1,6 @@
 import os
 import sys
+from pathlib import Path
 
 from cffi import FFI
 
@@ -10,9 +11,11 @@ lib_dirs = {
     "RELEASE": "../../../target/release",
     "CI": "native",
 }
+#BASE_DIR = Path(__file__).parent.parent.parent.parent.parent
+BASE_DIR = Path("/home/agni/projects/oso")
 include_dirs = {
-    "DEVELOPMENT": "../../../polar-c-api",
-    "RELEASE": "../../../polar-c-api",
+    "DEVELOPMENT": BASE_DIR / "polar-c-api",
+    "RELEASE": BASE_DIR / "polar-c-api",
     "CI": "native",
 }
 env = os.environ.get("OSO_ENV", "DEVELOPMENT")
